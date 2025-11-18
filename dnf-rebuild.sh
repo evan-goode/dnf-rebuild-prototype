@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euxo pipefail
+set -euo pipefail
 
 CONTAINER_TAG=localhost/dnf-rebuild
 REBUILD_PATH=/etc/dnf/rebuild
@@ -57,9 +57,7 @@ RUN dnf install -y 'dnf5-command(copr)' && \
     dnf install -y --from-repo copr:copr.fedorainfracloud.org:rpmsoftwaremanagement:dnf-nightly 'dnf5-command(manifest)' && \
     dnf install -y 'dnf5-command(manifest)'
 
-# https://github.com/rpm-software-management/dnf5/pull/2504
-# RUN dnf manifest resolve --use-host-repos --disableplugin=local --use-system
-RUN dnf manifest resolve --disableplugin=local --use-system
+RUN dnf manifest resolve --use-host-repos --disableplugin=local --use-system
 
 RUN dnf manifest install -y --disableplugin=local --setopt=keepcache=true --setopt=destdir="$CACHEDIR"
 
@@ -77,9 +75,6 @@ EOF
     [ -f "REBUILD_PATH/rpms.in.yaml" ] || cat > "$REBUILD_PATH/rpms.in.yaml" <<EOF
 contentOrigin:
     repos:
-        # TODO remove repos and use --use-host-repos
-        - repoid: rawhide
-          baseurl: https://download-cc-rdu01.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/
 packages:
 arches:
     - $arch
